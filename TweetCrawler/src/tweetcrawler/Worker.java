@@ -65,7 +65,7 @@ public class Worker extends Thread {
             try {
                 BufferedReader br = getBufferedReaderForCompressedFile(f.getAbsolutePath());
                 while ((line = br.readLine()) != null) {
-                    line = line.replaceAll("Twitter for iPhone", "").replaceAll("download\\/iphone", "").toLowerCase();
+                    line = line.replaceAll("Twitter for iPhone", "").replaceAll("download\\/iphone", "").replaceAll("screen_", "").toLowerCase();
                     if (line.contains(productName)) {
                         for (int i = 0; i < keywords.length; i++) {
                             if (line.contains(keywords[i])) {
@@ -77,7 +77,7 @@ public class Worker extends Thread {
 
                 synchronized (Worker.processedFiles) {
                     processedFiles.put(f.getAbsolutePath(), "done by " + this.id);
-                    System.out.println("Thread " + this.id + "\tdid " + f.getPath() + " -- " + 100*((double)TweetCrawler.numFilesProcessed / TweetCrawler.numFiles) + "% complete");
+                    System.out.println("Thread " + this.id + "\tdid " + f.getPath() + " -- " + 100*((double)TweetCrawler.numFilesProcessed++ / TweetCrawler.numFiles) + "% complete");
                 }
             } catch (FileNotFoundException ex) {
                 System.out.println("File not found: " + f.getAbsolutePath());

@@ -12,20 +12,27 @@ import java.io.File;
  * @author ayhun
  */
 public class TweetCrawler {
-
-    public static final String dataFolderName = "tweets";
+    // where the data files reside (.bz2 files)
+    public static final String dataFolderName = "E:\\twttr";
+    // keyword that makes a tweet candidate
     public static final String productName = "iphone";
+    // keywords that are searched in the candidate tweet. if exists, the tweet will be added to the respective output file
     public static final String[] keywords = new String[]{"battery", "screen", "camera"};
+    // number of files that are already processed and total number of files
     public static int numFiles, numFilesProcessed;
-    public static final int numWorkers = 16;
+    // number of threads to be created
+    public static final int numWorkers = 8;
 
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        System.out.println("Number of files in folder:" + getFilesCount(new File(dataFolderName)));
+        System.out.println("Counting number of files to be processed...");
         numFiles = getFilesCount(new File(dataFolderName));
         numFilesProcessed = 0;
+        System.out.println("Number of bz2 files in folder:" + numFiles);
+        
+        clearOldOutputs();
         Worker[] workers = new Worker[numWorkers];
         for (int i = 0; i < workers.length; i++) {
             workers[i] = new Worker(i);
@@ -40,6 +47,15 @@ public class TweetCrawler {
             }
         }
 
+    }
+    
+    public static void clearOldOutputs() {
+        for(String kw:keywords){
+            File f = new File(kw + ".json");
+            if (f.exists()) {
+                f.delete();
+            }
+        }
     }
 
     public static int getFilesCount(File file) {
