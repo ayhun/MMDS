@@ -13,7 +13,7 @@ import java.io.File;
  */
 public class TweetCrawler {
     // where the data files reside (.bz2 files)
-    public static final String dataFolderName = "E:\\twttr";
+    public static final String dataFolderName = "tweets";
     // keyword that makes a tweet candidate
     public static final String productName = "iphone";
     // keywords that are searched in the candidate tweet. if exists, the tweet will be added to the respective output file
