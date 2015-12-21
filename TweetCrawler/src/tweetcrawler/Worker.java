@@ -23,18 +23,13 @@ import org.apache.commons.lang3.StringUtils;
  * @author ayhun
  */
 public class Worker extends Thread {
-
     // remember which files already processed
     public static final HashMap<String, String> processedFiles = new HashMap<>();
-    // other vars
-    private final String productName;
-    private final String[] keywords;
+    // id
     private final int id;
 
     public Worker(int id) {
         this.id = id;
-        this.productName = TweetCrawler.productName;
-        this.keywords = TweetCrawler.keywords;
     }
 
     @Override
@@ -67,10 +62,10 @@ public class Worker extends Thread {
                 BufferedReader br = getBufferedReaderForCompressedFile(f.getAbsolutePath());
                 while ((line = br.readLine()) != null) {
                     line = StringUtils.replaceEach(line, new String[]{"Twitter for iPhone", "download\\/iphone", "screen_"}, new String[]{"", "", ""}).toLowerCase();
-                    if (StringUtils.contains(line, productName)) {
-                        if (StringUtils.containsAny(line, keywords)) {
-                            for (int i = 0; i < keywords.length; i++) {
-                                if (StringUtils.contains(line, keywords[i])) {
+                    if (StringUtils.contains(line, TweetCrawler.productName)) {
+                        if (StringUtils.containsAny(line, TweetCrawler.keywords)) {
+                            for (int i = 0; i < TweetCrawler.keywords.length; i++) {
+                                if (StringUtils.contains(line, TweetCrawler.keywords[i])) {
                                     TweetCrawler.appendContents(i, line);
                                 }
                             }
@@ -93,10 +88,7 @@ public class Worker extends Thread {
     }
 
     public BufferedReader getBufferedReaderForCompressedFile(String fileIn) throws FileNotFoundException, CompressorException {
-        FileInputStream fin = new FileInputStream(fileIn);
-        BufferedInputStream bis = new BufferedInputStream(fin);
-        CompressorInputStream input = new CompressorStreamFactory().createCompressorInputStream(bis);
-        BufferedReader br2 = new BufferedReader(new InputStreamReader(input));
-        return br2;
+        CompressorInputStream input = new CompressorStreamFactory().createCompressorInputStream(new BufferedInputStream(new FileInputStream(fileIn)));
+        return new BufferedReader(new InputStreamReader(input));
     }
 }

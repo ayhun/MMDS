@@ -21,7 +21,7 @@ public class TweetCrawler {
     // keyword that makes a tweet candidate
     public static final String productName = "iphone";
     // keywords that are searched in the candidate tweet. if exists, the tweet will be added to the respective output file
-    public static final String[] keywords = new String[]{"battery", "screen", "camera"};
+    public static final String[] keywords = new String[]{"battery", "screen ", "camera"};// screen has a space after it because we get many false positives like screenshot. I will find a better solution later
     // a bufferedwriter for each keyword. Every bufferedwriter writes to a different file that contains tweets that contain a specific keyword
     public static BufferedWriter[] outFiles;
     // number of files that are already processed and total number of files
@@ -46,10 +46,10 @@ public class TweetCrawler {
             workers[i].start();
         }
 
-        for (int i = 0; i < workers.length; i++) {
+        for (Worker worker : workers) {
             try {
-                workers[i].join();
-            } catch (InterruptedException ex) {
+                worker.join();
+            }catch (InterruptedException ex) {
                 System.out.println("Throwed interrupted exception: " + ex.getMessage());
             }
         }
