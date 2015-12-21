@@ -10,7 +10,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashMap;
@@ -69,7 +68,7 @@ public class Worker extends Thread {
                     if (line.contains(productName)) {
                         for (int i = 0; i < keywords.length; i++) {
                             if (line.contains(keywords[i])) {
-                                appendContents(keywords[i], line);
+                                TweetCrawler.appendContents(i, line);
                             }
                         }
                     }
@@ -95,22 +94,5 @@ public class Worker extends Thread {
         CompressorInputStream input = new CompressorStreamFactory().createCompressorInputStream(bis);
         BufferedReader br2 = new BufferedReader(new InputStreamReader(input));
         return br2;
-    }
-
-    public static synchronized void appendContents(String sFileName, String sContent) {
-        sFileName += ".json";
-        try {
-            File f = new File(sFileName);
-            if (!f.exists()) {
-                f.createNewFile();
-            }
-            if (f.canWrite()) {
-                FileWriter fw = new FileWriter(sFileName, true);
-                fw.write(sContent + "\n");
-                fw.close();
-            }
-        } catch (IOException oException) {
-            throw new IllegalArgumentException("Error appending/File cannot be written: \n" + sFileName);
-        }
     }
 }
