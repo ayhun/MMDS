@@ -16,12 +16,14 @@ import java.util.HashMap;
 import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  *
  * @author ayhun
  */
 public class Worker extends Thread {
+
     // remember which files already processed
     public static final HashMap<String, String> processedFiles = new HashMap<>();
     // other vars
@@ -64,11 +66,13 @@ public class Worker extends Thread {
             try {
                 BufferedReader br = getBufferedReaderForCompressedFile(f.getAbsolutePath());
                 while ((line = br.readLine()) != null) {
-                    line = line.replaceAll("Twitter for iPhone", "").replaceAll("download\\/iphone", "").replaceAll("screen_", "").toLowerCase();
-                    if (line.contains(productName)) {
-                        for (int i = 0; i < keywords.length; i++) {
-                            if (line.contains(keywords[i])) {
-                                TweetCrawler.appendContents(i, line);
+                    line = StringUtils.replaceEach(line, new String[]{"Twitter for iPhone", "download\\/iphone", "screen_"}, new String[]{"", "", ""}).toLowerCase();
+                    if (StringUtils.contains(line, productName)) {
+                        if (StringUtils.containsAny(line, keywords)) {
+                            for (int i = 0; i < keywords.length; i++) {
+                                if (StringUtils.contains(line, keywords[i])) {
+                                    TweetCrawler.appendContents(i, line);
+                                }
                             }
                         }
                     }
@@ -76,7 +80,7 @@ public class Worker extends Thread {
 
                 synchronized (Worker.processedFiles) {
                     processedFiles.put(f.getAbsolutePath(), "done by " + this.id);
-                    System.out.println("Thread " + this.id + "\tdid " + f.getPath() + " -- " + 100*((double)TweetCrawler.numFilesProcessed++ / TweetCrawler.numFiles) + "% complete");
+                    System.out.println("Thread " + this.id + "\tdid " + f.getPath() + " -- " + 100 * ((double) TweetCrawler.numFilesProcessed++ / TweetCrawler.numFiles) + "% complete");
                 }
             } catch (FileNotFoundException ex) {
                 System.out.println("File not found: " + f.getAbsolutePath());
