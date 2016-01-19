@@ -18,10 +18,10 @@ public class TweetCrawler {
 
     // where the data files reside (.bz2 files)
     public static final String dataFolderName = "tweets";
-    // keyword that makes a tweet candidate
+    // keyword that makes a tweet candidate (!!!!!!!!!!must be lowercase!!!!!!!!!!)
     public static final String productName = "iphone";
-    // keywords that are searched in the candidate tweet. if exists, the tweet will be added to the respective output file
-    public static final String[] keywords = new String[]{"battery", "screen ", "camera"};// screen has a space after it because we get many false positives like screenshot. I will find a better solution later
+    // keywords that are searched in the candidate tweet. if exists, the tweet will be added to the respective output file (!!!!!!!!!!must be lowercase!!!!!!!!!!)
+    public static final String[] keywords = new String[]{"battery", "screen", "camera", "iphone"};// screen has a space after it because we get many false positives like screenshot. I will find a better solution later
     // a bufferedwriter for each keyword. Every bufferedwriter writes to a different file that contains tweets that contain a specific keyword
     public static BufferedWriter[] outFiles;
     // number of files that are already processed and total number of files
