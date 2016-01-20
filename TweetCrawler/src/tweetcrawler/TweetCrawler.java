@@ -9,6 +9,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Date;
 
 /**
  *
@@ -49,13 +50,20 @@ public class TweetCrawler {
         for (Worker worker : workers) {
             try {
                 worker.join();
-            }catch (InterruptedException ex) {
+            } catch (InterruptedException ex) {
                 System.out.println("Throwed interrupted exception: " + ex.getMessage());
             }
         }
-        
+
         closeFiles();
         System.out.println("bye..");
+        try {
+            FileWriter fw = new FileWriter("finished.txt");
+            fw.write(numFiles + " files has been successfully processed. Finished at " + new Date().toString());
+            fw.close();
+        } catch (IOException ex) {
+            System.out.println("It should be fine if you made it here anyways");;
+        }
     }
 
     public static void clearOldOutputs() {
@@ -105,9 +113,9 @@ public class TweetCrawler {
             }
         }
     }
-    
-    private static void closeFiles(){
-        for(BufferedWriter bw:outFiles){
+
+    private static void closeFiles() {
+        for (BufferedWriter bw : outFiles) {
             try {
                 bw.close();
             } catch (IOException ex) {

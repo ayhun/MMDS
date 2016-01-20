@@ -30,7 +30,7 @@ public class Worker extends Thread {
     // id
     private final int id;
     // json fields that are reflected to output
-    private final String[] jsonFields = new String[]{"created_at", "id_str", "text", "lang"};
+    private final String[] jsonFields = new String[]{"created_at", "timestamp_ms", "id_str", "text", "lang"};
 
     public Worker(int id) {
         this.id = id;
