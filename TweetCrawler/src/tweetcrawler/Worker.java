@@ -64,16 +64,14 @@ public class Worker extends Thread {
         if (proceed) {
             try {
                 BufferedReader br = getBufferedReaderForCompressedFile(f.getAbsolutePath());
-                while ((line = br.readLine()) != null) {                    
+                while ((line = br.readLine()) != null) {
                     JSONObject js = new JSONObject(line);
                     if (js.has("text")) {
                         line = js.getString("text").toLowerCase();
-                        if (StringUtils.contains(line, TweetCrawler.productName)) {
-                            if (StringUtils.containsAny(line, TweetCrawler.keywords)) {
-                                for (int i = 0; i < TweetCrawler.keywords.length; i++) {
-                                    if (StringUtils.contains(line, TweetCrawler.keywords[i])) {
-                                        TweetCrawler.appendContents(i, stripJSON(js));
-                                    }
+                        if (StringUtils.contains(line, TweetCrawler.productName) && StringUtils.containsAny(line, TweetCrawler.keywords) && !StringUtils.containsAny(line, TweetCrawler.forbiddenWords)) {
+                            for (int i = 0; i < TweetCrawler.keywords.length; i++) {
+                                if (StringUtils.contains(line, TweetCrawler.keywords[i])) {
+                                    TweetCrawler.appendContents(i, stripJSON(js));
                                 }
                             }
                         }

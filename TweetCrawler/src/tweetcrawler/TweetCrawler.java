@@ -23,12 +23,14 @@ public class TweetCrawler {
     public static final String productName = "iphone";
     // keywords that are searched in the candidate tweet. if exists, the tweet will be added to the respective output file (!!!!!!!!!!must be lowercase!!!!!!!!!!)
     public static final String[] keywords = new String[]{"battery", "screen", "camera", "iphone"};// screen has a space after it because we get many false positives like screenshot. I will find a better solution later
+    // keywords that causes tweet to be ignored
+    public static final String[] forbiddenWords = new String[]{"http"};
     // a bufferedwriter for each keyword. Every bufferedwriter writes to a different file that contains tweets that contain a specific keyword
     public static BufferedWriter[] outFiles;
     // number of files that are already processed and total number of files
     public static int numFiles, numFilesProcessed;
-    // number of threads to be created
-    public static final int numWorkers = 8;
+    // number of threads to be created (use number of cpus if 0)
+    public static final int numWorkers = 0;
 
     /**
      * @param args the command line arguments
@@ -41,7 +43,7 @@ public class TweetCrawler {
 
         clearOldOutputs();
         createBufferedWriters();
-        Worker[] workers = new Worker[numWorkers];
+        Worker[] workers = new Worker[(numWorkers == 0) ? Runtime.getRuntime().availableProcessors():numWorkers];
         for (int i = 0; i < workers.length; i++) {
             workers[i] = new Worker(i);
             workers[i].start();
