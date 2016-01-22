@@ -40,9 +40,11 @@ public class TweetCrawler {
         numFiles = getFilesCount(new File(dataFolderName));
         numFilesProcessed = 0;
         System.out.println("Number of bz2 files in folder:" + numFiles);
-
+        
         clearOldOutputs();
         createBufferedWriters();
+        
+        String startTime = new Date().toString();
         Worker[] workers = new Worker[(numWorkers == 0) ? Runtime.getRuntime().availableProcessors():numWorkers];
         for (int i = 0; i < workers.length; i++) {
             workers[i] = new Worker(i);
@@ -61,7 +63,7 @@ public class TweetCrawler {
         System.out.println("bye..");
         try {
             FileWriter fw = new FileWriter("finished.txt");
-            fw.write(numFiles + " files has been successfully processed. Finished at " + new Date().toString());
+            fw.write(numFiles + " files has been successfully processed.\nstart:" + startTime + "\nfinish:" + new Date().toString());
             fw.close();
         } catch (IOException ex) {
             System.out.println("It should be fine if you made it here anyways");;
