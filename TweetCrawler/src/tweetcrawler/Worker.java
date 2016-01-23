@@ -17,6 +17,7 @@ import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -88,6 +89,9 @@ public class Worker extends Thread {
                 System.out.println("Compressor exception: " + ex.getMessage());
             } catch (IOException ex) {
                 System.out.println("Problem reading the file: " + f.getAbsolutePath());
+            } catch (JSONException ex) {
+                System.out.println("Exception: " + ex.toString());
+                TweetCrawler.errOut(id, "Exception:" + ex.toString());
             } catch (ArrayIndexOutOfBoundsException ex){
                 System.out.println("probably corrupted file at " + f.getAbsolutePath() + "Exception:" + ex);
                 TweetCrawler.errOut(id, "probably corrupted file at " + f.getAbsolutePath() + "Exception:" + ex.toString());

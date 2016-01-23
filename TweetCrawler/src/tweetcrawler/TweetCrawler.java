@@ -109,7 +109,7 @@ public class TweetCrawler {
 
     private static void createBufferedWriters() {
         outFiles = new BufferedWriter[keywords.length + 1];
-        for (int i = 0; i < keywords.length - 1; i++) {
+        for (int i = 0; i < keywords.length; i++) {
             try {
                 outFiles[i] = new BufferedWriter(new FileWriter(keywords[i] + ".json", true));
             } catch (IOException ex) {
@@ -117,7 +117,7 @@ public class TweetCrawler {
             }
         }
         try {
-            outFiles[keywords.length-1] = new BufferedWriter(new FileWriter("err.out", true));
+            outFiles[keywords.length] = new BufferedWriter(new FileWriter("err.out", true));
         } catch (IOException ex) {
             System.out.println("Error creating writer: \nerr.out");
         }
@@ -135,7 +135,7 @@ public class TweetCrawler {
 
     public static synchronized void errOut(int threadId, String s) {
         try {
-            outFiles[keywords.length-1].append("Thread " + threadId + " :" + s);
+            outFiles[keywords.length].append("Thread " + threadId + " :" + s);
         } catch (IOException ex) {
             System.out.println("Problem with error outputting");
         }
