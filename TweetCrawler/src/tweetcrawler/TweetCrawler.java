@@ -40,12 +40,12 @@ public class TweetCrawler {
         numFiles = getFilesCount(new File(dataFolderName));
         numFilesProcessed = 0;
         System.out.println("Number of bz2 files in folder:" + numFiles);
-        
+
         clearOldOutputs();
         createBufferedWriters();
-        
+
         String startTime = new Date().toString();
-        Worker[] workers = new Worker[(numWorkers == 0) ? Runtime.getRuntime().availableProcessors():numWorkers];
+        Worker[] workers = new Worker[(numWorkers == 0) ? Runtime.getRuntime().availableProcessors() : numWorkers];
         for (int i = 0; i < workers.length; i++) {
             workers[i] = new Worker(i);
             workers[i].start();
@@ -108,13 +108,18 @@ public class TweetCrawler {
     }
 
     private static void createBufferedWriters() {
-        outFiles = new BufferedWriter[keywords.length];
-        for (int i = 0; i < keywords.length; i++) {
+        outFiles = new BufferedWriter[keywords.length + 1];
+        for (int i = 0; i < keywords.length - 1; i++) {
             try {
                 outFiles[i] = new BufferedWriter(new FileWriter(keywords[i] + ".json", true));
             } catch (IOException ex) {
-                System.out.println("Error appending/File cannot be written: \n" + keywords[i] + ".json");
+                System.out.println("Error creating writer: \n" + keywords[i] + ".json");
             }
+        }
+        try {
+            outFiles[keywords.length-1] = new BufferedWriter(new FileWriter("err.out", true));
+        } catch (IOException ex) {
+            System.out.println("Error creating writer: \nerr.out");
         }
     }
 
@@ -125,6 +130,14 @@ public class TweetCrawler {
             } catch (IOException ex) {
                 System.out.println("There was a problem closing the file:\n" + ex.getMessage());
             }
+        }
+    }
+
+    public static synchronized void errOut(int threadId, String s) {
+        try {
+            outFiles[keywords.length-1].append("Thread " + threadId + " :" + s);
+        } catch (IOException ex) {
+            System.out.println("Problem with error outputting");
         }
     }
 }

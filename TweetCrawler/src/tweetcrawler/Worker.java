@@ -88,6 +88,12 @@ public class Worker extends Thread {
                 System.out.println("Compressor exception: " + ex.getMessage());
             } catch (IOException ex) {
                 System.out.println("Problem reading the file: " + f.getAbsolutePath());
+            } catch (ArrayIndexOutOfBoundsException ex){
+                System.out.println("probably corrupted file at " + f.getAbsolutePath() + "Exception:" + ex);
+                TweetCrawler.errOut(id, "probably corrupted file at " + f.getAbsolutePath() + "Exception:" + ex.toString());
+            } catch (RuntimeException ex) {
+                System.out.println("Exception: " + ex.toString());
+                TweetCrawler.errOut(id, "Exception:" + ex.toString());
             }
         }
     }
@@ -100,7 +106,8 @@ public class Worker extends Thread {
     private String stripJSON(JSONObject json) {
         JSONObject stripped = new JSONObject();
         for (int i = 0; i < jsonFields.length; i++) {
-            stripped.put(jsonFields[i], json.getString(jsonFields[i]));
+            if(json.has(jsonFields[i]))
+                stripped.put(jsonFields[i], json.getString(jsonFields[i]));
         }
         return stripped.toString();
     }
