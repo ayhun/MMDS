@@ -17,6 +17,7 @@ import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -30,7 +31,7 @@ public class Worker extends Thread {
     // id
     private final int id;
     // json fields that are reflected to output
-    private final String[] jsonFields = new String[]{"created_at", "id_str", "text", "lang"};
+    private final String[] jsonFields = new String[]{"created_at", "timestamp_ms", "id_str", "text", "lang"};
 
     public Worker(int id) {
         this.id = id;
@@ -64,16 +65,14 @@ public class Worker extends Thread {
         if (proceed) {
             try {
                 BufferedReader br = getBufferedReaderForCompressedFile(f.getAbsolutePath());
-                while ((line = br.readLine()) != null) {                    
+                while ((line = br.readLine()) != null) {
                     JSONObject js = new JSONObject(line);
                     if (js.has("text")) {
                         line = js.getString("text").toLowerCase();
-                        if (StringUtils.contains(line, TweetCrawler.productName)) {
-                            if (StringUtils.containsAny(line, TweetCrawler.keywords)) {
-                                for (int i = 0; i < TweetCrawler.keywords.length; i++) {
-                                    if (StringUtils.contains(line, TweetCrawler.keywords[i])) {
-                                        TweetCrawler.appendContents(i, stripJSON(js));
-                                    }
+                        if (StringUtils.contains(line, TweetCrawler.productName) && StringUtils.containsAny(line, TweetCrawler.keywords) && !StringUtils.containsAny(line, TweetCrawler.forbiddenWords)) {
+                            for (int i = 0; i < TweetCrawler.keywords.length; i++) {
+                                if (StringUtils.contains(line, TweetCrawler.keywords[i])) {
+                                    TweetCrawler.appendContents(i, stripJSON(js));
                                 }
                             }
                         }
@@ -90,6 +89,15 @@ public class Worker extends Thread {
                 System.out.println("Compressor exception: " + ex.getMessage());
             } catch (IOException ex) {
                 System.out.println("Problem reading the file: " + f.getAbsolutePath());
+            } catch (JSONException ex) {
+                System.out.println("Exception: " + ex.toString());
+                TweetCrawler.errOut(id, "Exception:" + ex.toString());
+            } catch (ArrayIndexOutOfBoundsException ex){
+                System.out.println("probably corrupted file at " + f.getAbsolutePath() + "Exception:" + ex);
+                TweetCrawler.errOut(id, "probably corrupted file at " + f.getAbsolutePath() + "Exception:" + ex.toString());
+            } catch (RuntimeException ex) {
+                System.out.println("Exception: " + ex.toString());
+                TweetCrawler.errOut(id, "Exception:" + ex.toString());
             }
         }
     }
@@ -102,7 +110,8 @@ public class Worker extends Thread {
     private String stripJSON(JSONObject json) {
         JSONObject stripped = new JSONObject();
         for (int i = 0; i < jsonFields.length; i++) {
-            stripped.put(jsonFields[i], json.getString(jsonFields[i]));
+            if(json.has(jsonFields[i]))
+                stripped.put(jsonFields[i], json.getString(jsonFields[i]));
         }
         return stripped.toString();
     }

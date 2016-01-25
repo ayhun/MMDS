@@ -9,6 +9,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Date;
 
 /**
  *
@@ -22,12 +23,14 @@ public class TweetCrawler {
     public static final String productName = "iphone";
     // keywords that are searched in the candidate tweet. if exists, the tweet will be added to the respective output file (!!!!!!!!!!must be lowercase!!!!!!!!!!)
     public static final String[] keywords = new String[]{"battery", "screen", "camera", "iphone"};// screen has a space after it because we get many false positives like screenshot. I will find a better solution later
+    // keywords that causes tweet to be ignored
+    public static final String[] forbiddenWords = new String[]{"http"};
     // a bufferedwriter for each keyword. Every bufferedwriter writes to a different file that contains tweets that contain a specific keyword
     public static BufferedWriter[] outFiles;
     // number of files that are already processed and total number of files
     public static int numFiles, numFilesProcessed;
-    // number of threads to be created
-    public static final int numWorkers = 8;
+    // number of threads to be created (use number of cpus if 0)
+    public static final int numWorkers = 0;
 
     /**
      * @param args the command line arguments
@@ -40,7 +43,9 @@ public class TweetCrawler {
 
         clearOldOutputs();
         createBufferedWriters();
-        Worker[] workers = new Worker[numWorkers];
+
+        String startTime = new Date().toString();
+        Worker[] workers = new Worker[(numWorkers == 0) ? Runtime.getRuntime().availableProcessors() : numWorkers];
         for (int i = 0; i < workers.length; i++) {
             workers[i] = new Worker(i);
             workers[i].start();
@@ -49,13 +54,20 @@ public class TweetCrawler {
         for (Worker worker : workers) {
             try {
                 worker.join();
-            }catch (InterruptedException ex) {
+            } catch (InterruptedException ex) {
                 System.out.println("Throwed interrupted exception: " + ex.getMessage());
             }
         }
-        
+
         closeFiles();
         System.out.println("bye..");
+        try {
+            FileWriter fw = new FileWriter("finished.txt");
+            fw.write(numFiles + " files has been successfully processed.\nstart:" + startTime + "\nfinish:" + new Date().toString());
+            fw.close();
+        } catch (IOException ex) {
+            System.out.println("It should be fine if you made it here anyways");;
+        }
     }
 
     public static void clearOldOutputs() {
@@ -96,23 +108,36 @@ public class TweetCrawler {
     }
 
     private static void createBufferedWriters() {
-        outFiles = new BufferedWriter[keywords.length];
+        outFiles = new BufferedWriter[keywords.length + 1];
         for (int i = 0; i < keywords.length; i++) {
             try {
                 outFiles[i] = new BufferedWriter(new FileWriter(keywords[i] + ".json", true));
             } catch (IOException ex) {
-                System.out.println("Error appending/File cannot be written: \n" + keywords[i] + ".json");
+                System.out.println("Error creating writer: \n" + keywords[i] + ".json");
             }
         }
+        try {
+            outFiles[keywords.length] = new BufferedWriter(new FileWriter("err.out", true));
+        } catch (IOException ex) {
+            System.out.println("Error creating writer: \nerr.out");
+        }
     }
-    
-    private static void closeFiles(){
-        for(BufferedWriter bw:outFiles){
+
+    private static void closeFiles() {
+        for (BufferedWriter bw : outFiles) {
             try {
                 bw.close();
             } catch (IOException ex) {
                 System.out.println("There was a problem closing the file:\n" + ex.getMessage());
             }
+        }
+    }
+
+    public static synchronized void errOut(int threadId, String s) {
+        try {
+            outFiles[keywords.length].append("Thread " + threadId + " :" + s);
+        } catch (IOException ex) {
+            System.out.println("Problem with error outputting");
         }
     }
 }
