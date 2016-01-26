@@ -43,13 +43,13 @@ class NaiveBayesAnalyzer():
     def analyze(self, text):
         return self.cl.classify(text)
 
+naive_bayes_analyzer = NaiveBayesAnalyzer()
+
 
 def create_tweet_buckets_with_bayesian(tweets, use_emoticons=True):
     positive_tweets = []
     negative_tweets = []
     neutral_tweets = []
-
-    naive_bayes_analyzer = NaiveBayesAnalyzer()
 
     for tweet in tweets:
         if use_emoticons:
