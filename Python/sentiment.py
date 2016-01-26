@@ -63,7 +63,7 @@ def create_tweet_buckets_with_bayesian(tweets, use_emoticons=True):
                 tweet["polarity"] = u"negative"
                 negative_tweets.append(tweet)
                 continue
-        polarity = naive_bayes_analyzer.analyze(corrected)
+        polarity = naive_bayes_analyzer.analyze(tweet['lowercase_text'])
         if polarity == "pos":
             tweet["polarity"] = u"positive"
             positive_tweets.append(tweet)
@@ -104,7 +104,7 @@ def load_tweets_from_file(filename):
         tweet = json.loads(line)
         tweets.append(tweet)
 
-    tweets = tweets[:200]
+    #tweets = tweets[:50]
     return tweets
 
 
@@ -168,6 +168,19 @@ def report_for_dimension(dimension):
         tweets = filter_tweets(tweets)
         print "Filtering ended"
 
+        print "Naive Bayesian Approach with Emoticons over all data"
+        positive_tweets, negative_tweets, neutral_tweets = create_tweet_buckets_with_bayesian(tweets, use_emoticons=True)
+        total_count = len(positive_tweets)+len(negative_tweets)
+        positive_tweets_count = len(positive_tweets)
+        negative_tweets_count = len(negative_tweets)
+        neutral_tweets_count = len(neutral_tweets)
+        print "%d\t%d\t%d\t%d" % (total_count, positive_tweets_count, negative_tweets_count, neutral_tweets_count)
+        print "total:%.2f%%\tpos:%.2f%%\tneg:%.2f%%\tneut:%.2f%%" % (round(total_count*100.0/total_count, 1),
+                                          round(positive_tweets_count*100.0/total_count, 1),
+                                          round(negative_tweets_count*100.0/total_count, 1),
+                                          round(neutral_tweets_count*100.0/total_count, 1))
+
+        print "Textblob overall data"
         positive_tweets, negative_tweets, neutral_tweets = create_tweet_buckets_with_textblob(tweets)
 
         total_count = len(tweets)
@@ -187,7 +200,7 @@ def report_for_dimension(dimension):
         p_positive_tweets_count = len(p_positive_tweets)
         p_negative_tweets_count = len(p_negative_tweets)
 
-        print "%d\t%d\t%d\t%d" % (total_count, p_positive_tweets_count, p_negative_tweets_count, p_neutral_tweets_count)
+        print "%d\t%d\t%d" % (total_count, p_positive_tweets_count, p_negative_tweets_count)
         print "total:%.2f%%\tpos:%.2f%%\tneg:%.2f%%" % (round(total_count*100.0/total_count, 1),
                                           round(p_positive_tweets_count*100.0/total_count, 1),
                                           round(p_negative_tweets_count*100.0/total_count, 1))
@@ -197,7 +210,7 @@ def report_for_dimension(dimension):
         n_positive_tweets_count = len(n_positive_tweets)
         n_negative_tweets_count = len(n_negative_tweets)
 
-        print "%d\t%d\t%d\t%d" % (total_count, n_positive_tweets_count, n_negative_tweets_count, n_neutral_tweets_count)
+        print "%d\t%d\t%d" % (total_count, n_positive_tweets_count, n_negative_tweets_count)
         print "total:%.2f%%\tpos:%.2f%%\tneg:%.2f%%" % (round(total_count*100.0/total_count, 1),
                                           round(n_positive_tweets_count*100.0/total_count, 1),
                                           round(n_negative_tweets_count*100.0/total_count, 1))
@@ -208,7 +221,7 @@ def report_for_dimension(dimension):
         p_positive_tweets_count = len(p_positive_tweets)
         p_negative_tweets_count = len(p_negative_tweets)
 
-        print "%d\t%d\t%d\t%d" % (total_count, p_positive_tweets_count, p_negative_tweets_count, p_neutral_tweets_count)
+        print "%d\t%d\t%d" % (total_count, p_positive_tweets_count, p_negative_tweets_count)
         print "total:%.2f%%\tpos:%.2f%%\tneg:%.2f%%" % (round(total_count*100.0/total_count, 1),
                                           round(p_positive_tweets_count*100.0/total_count, 1),
                                           round(p_negative_tweets_count*100.0/total_count, 1))
@@ -218,7 +231,7 @@ def report_for_dimension(dimension):
         n_positive_tweets_count = len(n_positive_tweets)
         n_negative_tweets_count = len(n_negative_tweets)
 
-        print "%d\t%d\t%d\t%d" % (total_count, n_positive_tweets_count, n_negative_tweets_count, n_neutral_tweets_count)
+        print "%d\t%d\t%d" % (total_count, n_positive_tweets_count, n_negative_tweets_count)
         print "total:%.2f%%\tpos:%.2f%%\tneg:%.2f%%" % (round(total_count*100.0/total_count, 1),
                                           round(n_positive_tweets_count*100.0/total_count, 1),
                                           round(n_negative_tweets_count*100.0/total_count, 1))
