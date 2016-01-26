@@ -167,6 +167,7 @@ def report_for_dimension(dimension):
         tweets = filter_tweets(tweets)
         print "Filtering ended"
         positive_tweets, negative_tweets, neutral_tweets = create_tweet_buckets_with_textblob(tweets)
+
         total_count = len(tweets)
         positive_tweets_count = len(positive_tweets)
         negative_tweets_count = len(negative_tweets)
@@ -177,6 +178,32 @@ def report_for_dimension(dimension):
                                           round(positive_tweets_count*100.0/total_count, 1),
                                           round(negative_tweets_count*100.0/total_count, 1),
                                           round(neutral_tweets_count*100.0/total_count, 1))
+
+        p_positive_tweets, p_negative_tweets, p_neutral_tweets = create_tweet_buckets_with_bayesian(positive_tweets)
+        total_count = len(positive_tweets)
+        p_positive_tweets_count = len(p_positive_tweets)
+        p_negative_tweets_count = len(p_negative_tweets)
+        p_neutral_tweets_count = len(p_neutral_tweets)
+
+        print "%d\t%d\t%d\t%d" % (total_count, p_positive_tweets_count, p_negative_tweets_count, p_neutral_tweets_count)
+        print "%.2f%%\t%.2f%%\t%.2f%%\t%.2f%%" % (round(total_count*100.0/total_count, 1),
+                                          round(p_positive_tweets_count*100.0/total_count, 1),
+                                          round(p_negative_tweets_count*100.0/total_count, 1),
+                                          round(p_neutral_tweets_count*100.0/total_count, 1))
+
+        n_positive_tweets, n_negative_tweets, n_neutral_tweets = create_tweet_buckets_with_bayesian(negative_tweets)
+        total_count = len(negative_tweets)
+        n_positive_tweets_count = len(n_positive_tweets)
+        n_negative_tweets_count = len(n_negative_tweets)
+        n_neutral_tweets_count = len(n_neutral_tweets)
+
+        print "%d\t%d\t%d\t%d" % (total_count, n_positive_tweets_count, n_negative_tweets_count, n_neutral_tweets_count)
+        print "%.2f%%\t%.2f%%\t%.2f%%\t%.2f%%" % (round(total_count*100.0/total_count, 1),
+                                          round(n_positive_tweets_count*100.0/total_count, 1),
+                                          round(n_negative_tweets_count*100.0/total_count, 1),
+                                          round(n_neutral_tweets_count*100.0/total_count, 1))
+
+
 
 
 def main():
