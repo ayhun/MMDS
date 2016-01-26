@@ -203,7 +203,7 @@ def report_for_dimension(dimension):
                                           round(n_negative_tweets_count*100.0/total_count, 1))
 
         print "Analyse Naive Bayesian Approach with Emoticons"
-        p_positive_tweets, p_negative_tweets, p_neutral_tweets = create_tweet_buckets_with_bayesian(positive_tweets, use_emoticons=False)
+        p_positive_tweets, p_negative_tweets, p_neutral_tweets = create_tweet_buckets_with_bayesian(positive_tweets, use_emoticons=True)
         total_count = len(p_positive_tweets)+len(p_negative_tweets)
         p_positive_tweets_count = len(p_positive_tweets)
         p_negative_tweets_count = len(p_negative_tweets)
@@ -213,7 +213,7 @@ def report_for_dimension(dimension):
                                           round(p_positive_tweets_count*100.0/total_count, 1),
                                           round(p_negative_tweets_count*100.0/total_count, 1))
 
-        n_positive_tweets, n_negative_tweets, n_neutral_tweets = create_tweet_buckets_with_bayesian(negative_tweets, use_emoticons=False)
+        n_positive_tweets, n_negative_tweets, n_neutral_tweets = create_tweet_buckets_with_bayesian(negative_tweets, use_emoticons=True)
         total_count = len(n_positive_tweets)+len(n_negative_tweets)
         n_positive_tweets_count = len(n_positive_tweets)
         n_negative_tweets_count = len(n_negative_tweets)
