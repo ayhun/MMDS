@@ -161,18 +161,20 @@ def report_for_dimension(dimension):
     for month in months:
         print "Creating report for the month %s" % months[month]
         tweets = load_tweets_from_file(u"./data/%s_%s.json" % (dimension, month))
+
         print "Loading ended"
         tweets = lowercase_tweets(tweets)
         print "Lowercase ended"
         tweets = filter_tweets(tweets)
         print "Filtering ended"
+
         positive_tweets, negative_tweets, neutral_tweets = create_tweet_buckets_with_textblob(tweets)
 
         total_count = len(tweets)
         positive_tweets_count = len(positive_tweets)
         negative_tweets_count = len(negative_tweets)
         neutral_tweets_count = len(neutral_tweets)
-
+        print "dtf"
         print "%d\t%d\t%d\t%d" % (total_count, positive_tweets_count, negative_tweets_count, neutral_tweets_count)
         print "total:%.2f%%\tpos:%.2f%%\tneg:%.2f%%\tneut:%.2f%%" % (round(total_count*100.0/total_count, 1),
                                           round(positive_tweets_count*100.0/total_count, 1),
@@ -193,7 +195,6 @@ def report_for_dimension(dimension):
         total_count = len(n_positive_tweets)+len(n_negative_tweets)
         n_positive_tweets_count = len(n_positive_tweets)
         n_negative_tweets_count = len(n_negative_tweets)
-        n_neutral_tweets_count = len(n_neutral_tweets)
 
         print "%d\t%d\t%d\t%d" % (total_count, n_positive_tweets_count, n_negative_tweets_count, n_neutral_tweets_count)
         print "total:%.2f%%\tpos:%.2f%%\tneg:%.2f%%" % (round(total_count*100.0/total_count, 1),
