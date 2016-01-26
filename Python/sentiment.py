@@ -174,7 +174,7 @@ def report_for_dimension(dimension):
         positive_tweets_count = len(positive_tweets)
         negative_tweets_count = len(negative_tweets)
         neutral_tweets_count = len(neutral_tweets)
-        print "dtf"
+
         print "%d\t%d\t%d\t%d" % (total_count, positive_tweets_count, negative_tweets_count, neutral_tweets_count)
         print "total:%.2f%%\tpos:%.2f%%\tneg:%.2f%%\tneut:%.2f%%" % (round(total_count*100.0/total_count, 1),
                                           round(positive_tweets_count*100.0/total_count, 1),
