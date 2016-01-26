@@ -18,13 +18,13 @@ import re
 positive_emojis = [u"\U0001F601",u"\U0001F602",u"\U0001F603",u"\U0001F604",u"\U0001F605",u"\U0001F606",u"\U0001F609",u"\U0001F60A",u"\U0001F60B",u"\U0001F60C", u"\U0001F60D",u"\U0001F60F",u"\U0001F618",u"\U0001F61A", u"\u2764", u"\u263A", u"\U0001F44D",u"\U0001F44F", u"\U0001F60E"]
 negative_emojis = [u"\U0001F612",u"\U0001F613",u"\U0001F614",u"\U0001F616",u"\U0001F61E",u"\U0001F620",u"\U0001F621",u"\U0001F622",u"\U0001F623",u"\U0001F624",u"\U0001F625",u"\U0001F628",u"\U0001F629",u"\U0001F62A",u"\U0001F62B",u"\U0001F62D",u"\U0001F630",u"\U0001F631",u"\U0001F44E", u"\U0001F494", u"\U0001F610"]
 
-neutral_words = [u"iphone", u"battery" u"camera", u"screen"]
+neutral_words = [u"iphone", u"battery", u"camera", u"screen"]
 
 positive_emoji_regex = re.compile(u'|'.join(positive_emojis))
 negative_emoji_regex = re.compile(u'|'.join(negative_emojis))
 neutral_words_regex = re.compile(u'|'.join(neutral_words))
 
-dimensions = [u"iphone", u"battery" u"camera", u"screen"]
+dimensions = [u"iphone", u"battery", u"camera", u"screen"]
 months = {u"1": u"August",
           u"2": u"September",
           u"3": u"October",
@@ -102,8 +102,9 @@ def load_tweets_from_file(filename):
     tweets = []
     for line in open(filename, 'r'):
         tweet = json.loads(line)
-
         tweets.append(tweet)
+
+    tweets = tweets[:200]
     return tweets
 
 
@@ -159,9 +160,12 @@ def report_for_dimension(dimension):
     print "Creating report for %s" % dimension
     for month in months:
         print "Creating report for the month %s" % months[month]
-        tweets = load_tweets_from_file(u"./data/%s_%s.json" %(dimension, month))
+        tweets = load_tweets_from_file(u"./data/%s_%s.json" % (dimension, month))
+        print "Loading ended"
         tweets = lowercase_tweets(tweets)
+        print "Lowercase ended"
         tweets = filter_tweets(tweets)
+        print "Filtering ended"
         positive_tweets, negative_tweets, neutral_tweets = create_tweet_buckets_with_textblob(tweets)
         total_count = len(tweets)
         positive_tweets_count = len(positive_tweets)
@@ -169,10 +173,10 @@ def report_for_dimension(dimension):
         neutral_tweets_count = len(neutral_tweets)
 
         print "%d\t%d\t%d\t%d" % (total_count, positive_tweets_count, negative_tweets_count, neutral_tweets_count)
-        print "%d\t%d\t%d\t%d" % (round(total_count*100.0/total_count, 1),
-                                  round(positive_tweets_count*100.0/total_count, 1),
-                                  round(negative_tweets_count*100.0/total_count, 1),
-                                  round(neutral_tweets_count*100.0/total_count, 1))
+        print "%.2f%%\t%.2f%%\t%.2f%%\t%.2f%%" % (round(total_count*100.0/total_count, 1),
+                                          round(positive_tweets_count*100.0/total_count, 1),
+                                          round(negative_tweets_count*100.0/total_count, 1),
+                                          round(neutral_tweets_count*100.0/total_count, 1))
 
 
 def main():
